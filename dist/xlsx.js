@@ -7476,8 +7476,15 @@ return function parse_ws_xml_data(sdata, s, opts, guess) {
 
 			/* SCHEMA IS ACTUALLY INCORRECT HERE.  IF A CELL HAS NO T, EMIT "" */
 			if(tag.t === undefined && p.v === undefined) {
-				if(!opts.sheetStubs) continue;
-				p.t = "stub";
+				if ((cref=d.match(match_f))!== null) {
+ 					p.f=unescapexml(cref[1]);
+ 				}
+				if (p.f && !isNaN(p.f * 1)) {
+					p.v = p.f;
+				} else {
+					if(!opts.sheetStubs) continue;
+					p.t = "stub";
+				}
 			}
 			else p.t = tag.t || "n";
 			if(guess.s.c > idx) guess.s.c = idx;

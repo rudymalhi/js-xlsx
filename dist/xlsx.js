@@ -7476,15 +7476,8 @@ return function parse_ws_xml_data(sdata, s, opts, guess) {
 
 			/* SCHEMA IS ACTUALLY INCORRECT HERE.  IF A CELL HAS NO T, EMIT "" */
 			if(tag.t === undefined && p.v === undefined) {
-				if ((cref=d.match(match_f))!== null) {
- 					p.f=unescapexml(cref[1]);
- 				}
-				if (p.f && !isNaN(p.f * 1)) {
-					p.v = p.f;
-				} else {
-					if(!opts.sheetStubs) continue;
-					p.t = "stub";
-				}
+				if(!opts.sheetStubs) continue;
+				p.t = "stub";
 			}
 			else p.t = tag.t || "n";
 			if(guess.s.c > idx) guess.s.c = idx;
@@ -11238,14 +11231,14 @@ function parse_zip(zip, opts) {
 	if(wbrels) wbrels = safe_parse_wbrels(wbrels, wb.Sheets);
 	/* Numbers iOS hack */
 	var nmode = (getzipdata(zip,"xl/worksheets/sheet.xml",true))?1:0;
-	for(i = 0; i != props.Worksheets; ++i) {
+	for(i = 0; i != wbrels.length; ++i) {
 		if(wbrels) path = 'xl/' + (wbrels[i][1]).replace(/[\/]?xl\//, "");
 		else {
 			path = 'xl/worksheets/sheet'+(i+1-nmode)+"." + wbext;
 			path = path.replace(/sheet0\./,"sheet.");
 		}
 		relsPath = path.replace(/^(.*)(\/)([^\/]*)$/, "$1/_rels/$3.rels");
-		safe_parse_ws(zip, path, relsPath, props.SheetNames[i], sheetRels, sheets, opts);
+		safe_parse_ws(zip, path, relsPath, wbrels[i][0], sheetRels, sheets, opts);
 	}
 
 	if(dir.comments) parse_comments(zip, dir.comments, sheets, sheetRels, opts);
